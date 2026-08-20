@@ -17,7 +17,7 @@ connectDB()
         console.log(`server is runnong at port: ${process.env.PORT}`);
     })
 })
-.catch("error", () => {
+.catch("error", (error) => {
     console.log('ERROR: FAILED to connect tot he dataBase',  error);
 })
 
