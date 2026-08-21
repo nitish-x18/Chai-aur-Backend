@@ -30,8 +30,7 @@ const userSchema = new Schema(
             required: true
         },
         coverImage: {
-            type: String, //use cloudinary url
-            required: true
+            type: String //use cloudinary url
         },
         watchHistory: [
             {
@@ -52,7 +51,7 @@ userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
 
     this.password = await bcrypt.hash(this.password, 10)
-    next()
+    // next(); dont use because async function is already used
 })
 
 userSchema.methods.isPasswordCorrect = async function (password) {
