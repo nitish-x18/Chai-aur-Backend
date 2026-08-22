@@ -22,6 +22,10 @@ router.route("/register").post(
 router.route("/login").post(loginUser)
 
 //secure routes
-router.route("./logout").post(verifyJWT, logoutUser)
+router.route("/logout").post(verifyJWT, logoutUser)
+
+router.route("/test").post((req, res) => {
+    res.send("test router working")
+})
 
 export default router;

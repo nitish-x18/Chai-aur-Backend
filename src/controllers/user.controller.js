@@ -97,7 +97,7 @@ const loginUser = asyncHandler(async (req, res) => {
     // accesss and refresh token 
     // send cookies
 
-    const { email, username, password } = req.body()
+    const { email, username, password } = req.body;
     console.log(email);
 
     if (!(username || email)) {
@@ -120,7 +120,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const { accessToken, refreshToken } = await genrateAccessAndRefreshTokens(user._id)
 
-    const loggedInUser = User.findById(user._id).select("-password -refreshToken")
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
     const options = {
         httpOnly: true,

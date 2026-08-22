@@ -19,7 +19,12 @@ import userRouter from "./routes/user.routes.js";
 
 
 //router declaration-->
+app.use((req, res, next) => {
+    console.log("REQUEST:", req.method, req.url);
+    next();
+});
 app.use("/api/v1/users", userRouter);
 
+console.log("USER ROUTER LOADED");
 
 export { app };
