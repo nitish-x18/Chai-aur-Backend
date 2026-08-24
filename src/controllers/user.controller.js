@@ -277,6 +277,38 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 })
 
 
+const updateUserAvatar = asyncHandler(async (req, res) => {
+    const avatarLocalPath = req.file?.path
+
+    if(!avatarLocalPath){
+        throw new apiError(400, "avatar path is not found")
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath)
+
+    if(!avatar){
+        throw new apiError(400, "Error: avatar is not uploaded on cloudinary")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                avatar: avatar.url
+            }
+        },
+        {
+            new: true
+        }
+    ).select("-password")
+
+    return res
+    .send(200)
+    .json(
+        new apiResponse(200, user, "avatar image updated succesfully")
+    )
+})
+
 
 
 
