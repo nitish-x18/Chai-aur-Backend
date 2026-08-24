@@ -162,22 +162,22 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
 
     return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new apiResponse(200, {}, "User logged Out Succesfully"))
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new apiResponse(200, {}, "User logged Out Succesfully"))
 
 })
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
-    if(!incomingRefreshToken){
+    if (!incomingRefreshToken) {
         throw new apiError(401, "unothorized request")
     }
 
     try {
-        
+
         const decodedToken = Jwt.verify(
             incomingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
@@ -185,11 +185,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
         const user = User.findById(decodedToken?._id)
 
-        if(!user){
+        if (!user) {
             throw new apiError(401, "invalid refresh token")
         }
 
-        if(incomingRefreshToken !== user?.refreshToken){
+        if (incomingRefreshToken !== user?.refreshToken) {
             throw new apiError(401, "refresh token is expired or used")
         }
 
@@ -198,19 +198,19 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             secure: true
         }
 
-        const {accessToken, newRefreshToken} = genrateAccessAndRefreshTokens(user._id)
+        const { accessToken, newRefreshToken } = genrateAccessAndRefreshTokens(user._id)
 
         return res
-        .send(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
-        .json(
-            new apiResponse(
-                200,
-                {accessToken, refreshToken: newRefreshToken},
-                "refresh Token genrated"
+            .send(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json(
+                new apiResponse(
+                    200,
+                    { accessToken, refreshToken: newRefreshToken },
+                    "refresh Token genrated"
+                )
             )
-        )
 
     } catch (error) {
         throw new apiError(401, error?.message || "invalid refresh token")
@@ -221,33 +221,64 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     const user = User.findById(user.req?._id)
     const isPasswordCorrect = user.isPasswordCorrect(oldpassword)
 
-    if(!isPasswordCorrect){
+    if (!isPasswordCorrect) {
         throw new apiError(401, "invalid Password")
     }
 
     user.password = newpassword
-    user.save({validateBeforeSave: false})
+    user.save({ validateBeforeSave: false })
 
     return res
-    .send(200)
-    .json(
-        new apiResponse(
-            200,
-            {},
-            "password changed succesfully"
+        .send(200)
+        .json(
+            new apiResponse(
+                200,
+                {},
+                "password changed succesfully"
+            )
         )
-    )
 })
 
 const getCurrentUser = asyncHandler(async (req, res) => {
     return res
+        .send(200)
+        .json(
+            200,
+            req.user,
+            "current user feched succesfully"
+        )
+})
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const { fullName, email } = req.body
+
+    if (!(fullName === email)) {
+        throw new apiError(400, "all fields are required")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullName,
+                email
+            }
+        },
+        {
+            new: true
+        }
+    ).select("-password")
+
+    return res
     .send(200)
     .json(
-        200,
-        req.user,
-        "current user feched succesfully"
+        new apiResponse(200, user, "account details updated succesfully")
     )
 })
+
+
+
+
 
 export {
     registerUser,
@@ -255,5 +286,6 @@ export {
     logoutUser,
     refreshAccessToken,
     changeCurrentPassword,
-    getCurrentUser
+    getCurrentUser,
+    updateAccountDetails,
 };
