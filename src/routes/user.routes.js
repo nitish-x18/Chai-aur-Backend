@@ -25,8 +25,5 @@ router.route("/login").post(loginUser)
 router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
 
-router.route("/test").post((req, res) => {
-    res.send("test router working")
-})
 
 export default router;
