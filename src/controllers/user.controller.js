@@ -309,7 +309,37 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     )
 })
 
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+    const coverLocalpath = req.file?.path
 
+    if(!coverLocalpath){
+        throw new apiError(400, "cover image is missing, not found")
+    }
+
+    const coverImage = await uploadOnCloudinary(coverLocalpath)
+
+    if(!coverImage){
+        throw new apiError(400, "Error: while uploding on cloudinary")
+    }
+
+    const user = User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                coverImage: coverImage.url
+            }
+        },
+        {
+            new: true
+        }
+    ).select("-password")
+
+    return res
+    .send(200)
+    .json(
+        new apiResponse(200, user, "coverImage updated succesfully")
+    )
+})
 
 
 export {
@@ -320,4 +350,6 @@ export {
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails,
+    updateUserAvatar,
+    updateUserCoverImage
 };
