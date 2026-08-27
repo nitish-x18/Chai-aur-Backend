@@ -270,23 +270,22 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     ).select("-password")
 
     return res
-    .send(200)
-    .json(
-        new apiResponse(200, user, "account details updated succesfully")
-    )
+        .send(200)
+        .json(
+            new apiResponse(200, user, "account details updated succesfully")
+        )
 })
-
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
     const avatarLocalPath = req.file?.path
 
-    if(!avatarLocalPath){
+    if (!avatarLocalPath) {
         throw new apiError(400, "avatar path is not found")
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
-    if(!avatar){
+    if (!avatar) {
         throw new apiError(400, "Error: avatar is not uploaded on cloudinary")
     }
 
@@ -303,22 +302,22 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     ).select("-password")
 
     return res
-    .send(200)
-    .json(
-        new apiResponse(200, user, "avatar image updated succesfully")
-    )
+        .send(200)
+        .json(
+            new apiResponse(200, user, "avatar image updated succesfully")
+        )
 })
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
     const coverLocalpath = req.file?.path
 
-    if(!coverLocalpath){
+    if (!coverLocalpath) {
         throw new apiError(400, "cover image is missing, not found")
     }
 
     const coverImage = await uploadOnCloudinary(coverLocalpath)
 
-    if(!coverImage){
+    if (!coverImage) {
         throw new apiError(400, "Error: while uploding on cloudinary")
     }
 
@@ -335,10 +334,14 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     ).select("-password")
 
     return res
-    .send(200)
-    .json(
-        new apiResponse(200, user, "coverImage updated succesfully")
-    )
+        .send(200)
+        .json(
+            new apiResponse(200, user, "coverImage updated succesfully")
+        )
+})
+
+const getUserChhanelProfile = asyncHandler(async (req, res) => {
+
 })
 
 
