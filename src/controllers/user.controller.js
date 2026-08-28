@@ -3,7 +3,7 @@ import { apiError } from "../utils/apiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { apiResponse } from "../utils/apiResponse.js";
-import { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const genrateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -288,6 +288,9 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     if (!avatar) {
         throw new apiError(400, "Error: avatar is not uploaded on cloudinary")
     }
+
+    //delete previous avatar from cloudinary
+
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
