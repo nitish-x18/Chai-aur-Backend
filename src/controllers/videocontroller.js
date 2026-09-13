@@ -86,7 +86,8 @@ const getAllVideos = asyncHandler(async (req, res) => {
                 )
             );
     } catch (error) {
-        throw new apiError(500, "Something went wrong while getting all vedios")
+        console.log(error);
+        throw error;
     }
 })
 
@@ -153,15 +154,98 @@ const publishAVideo = asyncHandler(async (req, res) => {
 })
 
 const getVideoById = asyncHandler(async (req, res) => {
-    const { videoId } = req.params
-    //TODO: get video by id
+    try {
+        const { videoId } = req.params
+    
+        const video = await Video.findById(videoId);
+    
+        if(!video){
+            throw new apiError(400, "Video not Found")
+        }
+    
+        return res
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                video,
+                "video Find Successfully"
+            )
+        )
+    } catch (error) {
+        console.log("get video by id ERROR: ", error);
+        throw error;
+    }
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
-    const { videoId } = req.params
-    //TODO: update video details like title, description, thumbnail
 
-})
+    try {
+        const { videoId } = req.params;
+    
+        if(!videoId){
+            throw new apiError(400, "Vedio not Found")
+        }
+    
+        const { tittle, description } = req.body;
+    
+        const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
+        let thumbnailUrl;
+    
+        if(thumbnailLocalPath){
+            const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+    
+            if(!thumbnail?.url){
+                throw new apiError(400, "Thumbnail upload fail")
+            }
+        }
+    
+        const updateData = {
+            //     $set :{
+            //     tittle,
+            //     description,
+            //     ...(thumbnailUrl && { thumbnail: thumbnailUrl })
+            // }
+        };
+
+        if(tittle){
+            updateData.tittle = tittle;
+        }
+
+        if(description){
+            updateData.description = description;
+        }
+
+        if(thumbnailUrl){
+            updateData.thumbnail = thumbnailUrl
+        }
+    
+        const video = await Video.findByIdAndUpdate(
+            {
+                _id: videoId,
+                owner: req.user._id
+            },
+            updateData, 
+            {
+                new: true
+            }
+        );
+    
+        return res
+        .status(200)
+        .json(
+            new apiResponse(
+                200, 
+                video, 
+                "Video data updated successfully"
+            )
+        );
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+
+});
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
