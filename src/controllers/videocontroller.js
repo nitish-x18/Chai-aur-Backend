@@ -91,7 +91,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
-    const { title, description } = req.body
+    // const { title, description } = req.body
     // TODO: get video, upload to cloudinary, create video
     try {
 
@@ -126,8 +126,8 @@ const publishAVideo = asyncHandler(async (req, res) => {
         const videoDocument = await Video.create({
             tittle,
             description,
-            videoLocalPath: video.url,
-            thumbnailLocalPath: thumbnail.url,
+            videoFile: video.url,
+            thumbnail: thumbnail.url,
             duration: video.duration,
             owner: req.user._id
         })
