@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 //routes import-->
 import userRouter from "./routes/user.routes.js";
-import vedioRouter from "./routes/video.routes.js";
+import videoRouter from "./routes/video.routes.js";
 
 
 //router declaration-->
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/vedio", vedioRouter);
+app.use("/api/v1/video", videoRouter);
 
 console.log("USER ROUTER LOADED");
 
