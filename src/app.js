@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v2/vedio", vedioRouter);
+app.use("/api/v1/vedio", vedioRouter);
 
 console.log("USER ROUTER LOADED");
 
