@@ -5,6 +5,7 @@ import { apiError } from "../utils/apiError.js"
 import { apiResponse } from "../utils/apiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
+import cloudinary from 'cloudinary'
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
@@ -248,8 +249,60 @@ const updateVideo = asyncHandler(async (req, res) => {
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
-    const { videoId } = req.params
-    //TODO: delete video
+    try {
+        const { videoId } = req.params
+        
+        if(!videoId){
+            throw new apiError(400, "vedio id not Found")
+        }
+    
+        const video = await Video.findOne({
+            _id: videoId,
+            owner: req.user._id
+        })
+    
+        if(!video){
+            throw new apiError(400, "video not found")
+        }
+    
+        if(video.videoFile){
+            const videoPublicId = video.videoFile
+            .split('/')
+            .slice(-1)[0]
+            .split('.')[0]
+    
+            await cloudinary.uploader.destroy(videoPublicId, {
+                resource_type: "video"
+            });
+        }
+    
+        if(video.thumbnail){
+            const thumbnailPublicId = video.thumbnail
+            .split('/')
+            .slice(-1)[0]
+            .split('.')[0]
+    
+            await cloudinary.uploader.destroy(thumbnailPublicId, {
+                resource_type: 'image'
+            })
+        }
+    
+        await Video.findByIdAndDelete(videoId);
+    
+        return res
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                video,
+                "video deleted"
+            )
+        )
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+
 })
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
