@@ -30,9 +30,9 @@ const createTweet = asyncHandler(async (req, res) => {
         }
     
         return res
-        .status(200)
+        .status(201)
         .json(
-            new apiResponse(200, tweet, "tweet created succesfully")
+            new apiResponse(201, tweet, "tweet created succesfully")
         )
     } catch (error) {
         console.log(error);
@@ -43,6 +43,30 @@ const createTweet = asyncHandler(async (req, res) => {
 
 const getUserTweets = asyncHandler(async (req, res) => {
     // TODO: get user tweets
+    const { userId } = req.params;
+
+    if(!userId){
+        throw new apiError(400, "UserId is required")
+    }
+
+    if(!isValidObjectId(userId)){
+        throw new apiError(400, "the userid is not exist");
+    }
+
+    const tweets = await Tweet.find({
+        owner: userId
+    });
+
+    if(tweets.length === 0){
+        throw new apiError(400, "Tweet is not found")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new apiResponse(200, tweets, "Succesfully get user tweet")
+    )
+
 })
 
 const updateTweet = asyncHandler(async (req, res) => {
