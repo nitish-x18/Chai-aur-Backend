@@ -48,10 +48,57 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
 const addComment = asyncHandler(async (req, res) => {
     // TODO: add a comment to a video
+
+
 })
 
 const updateComment = asyncHandler(async (req, res) => {
     // TODO: update a comment
+    const { commentId } = req.params;
+
+    if(!commentId){
+        throw new apiError(400, "comment id not found")
+    }
+
+    const { content } = req.body;
+
+    if(!content){
+        throw new apiError(400, "comment is required")
+    }
+
+    const userId = req.user._id;
+
+    if(!userId){
+        throw new apiError(400, "userid not found")
+    }
+
+    const comment = await Comment.findOneAndUpdate(
+        {
+            _id: commentId,
+            owner: userId
+        },
+        {
+            content: content
+        },
+        {
+            new: true
+        }
+    )
+
+    if(!comment){
+        throw new apiError(400, "failed to update comment")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new apiResponse(
+            200, 
+            comment, 
+            "comment updated succesfully"
+        )
+    )
+
 })
 
 const deleteComment = asyncHandler(async (req, res) => {
