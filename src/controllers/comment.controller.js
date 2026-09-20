@@ -51,21 +51,21 @@ const addComment = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     const { content } = req.body
 
-    if(!videoId){
+    if (!videoId) {
         throw new apiError(400, "video id is not found")
     }
 
-    if(!isValidObjectId(videoId)){
+    if (!isValidObjectId(videoId)) {
         throw new apiError(400, "video id is invalid")
     }
 
-    if(!content){
+    if (!content) {
         throw new apiError(400, "comment is required")
     }
 
-    const userId =  req.user._id
+    const userId = req.user._id
 
-    if(!userId){
+    if (!userId) {
         throw new apiError(400, "userid is not found")
     }
 
@@ -77,19 +77,19 @@ const addComment = asyncHandler(async (req, res) => {
         }
     )
 
-    if(!comment){
+    if (!comment) {
         throw new apiError(400, "Failed to create comment")
     }
 
     return res
-    .status(201)
-    .json(
-        new apiResponse(
-            201,
-            comment,
-            "comment created successfully"
+        .status(201)
+        .json(
+            new apiResponse(
+                201,
+                comment,
+                "comment created successfully"
+            )
         )
-    )
 
 })
 
@@ -97,19 +97,19 @@ const updateComment = asyncHandler(async (req, res) => {
     // TODO: update a comment
     const { commentId } = req.params;
 
-    if(!commentId){
+    if (!commentId) {
         throw new apiError(400, "comment id not found")
     }
 
     const { content } = req.body;
 
-    if(!content){
+    if (!content) {
         throw new apiError(400, "comment is required")
     }
 
     const userId = req.user._id;
 
-    if(!userId){
+    if (!userId) {
         throw new apiError(400, "userid not found")
     }
 
@@ -126,19 +126,19 @@ const updateComment = asyncHandler(async (req, res) => {
         }
     )
 
-    if(!comment){
+    if (!comment) {
         throw new apiError(400, "failed to update comment")
     }
 
     return res
-    .status(200)
-    .json(
-        new apiResponse(
-            200, 
-            comment, 
-            "comment updated succesfully"
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                comment,
+                "comment updated succesfully"
+            )
         )
-    )
 
 })
 
@@ -146,11 +146,11 @@ const deleteComment = asyncHandler(async (req, res) => {
     // TODO: delete a comment
     const { commentId } = req.params;
 
-    if(!commentId){
+    if (!commentId) {
         throw new apiError(400, "comment not found")
     }
 
-    if(!isValidObjectId(commentId)){
+    if (!isValidObjectId(commentId)) {
         throw new apiError(400, "commnt is invalid")
     }
 
@@ -161,19 +161,19 @@ const deleteComment = asyncHandler(async (req, res) => {
         }
     )
 
-    if(!comment){
+    if (!comment) {
         throw new apiError(400, "Failed to delete comment")
     }
 
     return res
-    .status(200)
-    .json(
-        new apiResponse(
-            200,
-            null,
-            "commnet delete succesfully"
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                null,
+                "commnet delete succesfully"
+            )
         )
-    )
 
 })
 
