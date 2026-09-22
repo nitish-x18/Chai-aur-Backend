@@ -7,8 +7,12 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const createPlaylist = asyncHandler(async (req, res) => {
     const {name, description} = req.body
-
     //TODO: create playlist
+    if(!name && description){
+        throw new apiError(400, "name and description is required")
+    }
+
+    
 })
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
