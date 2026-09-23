@@ -1,5 +1,6 @@
 import mongoose, {isValidObjectId} from "mongoose"
 import {Playlist} from "../models/playlist.model.js"
+import {Video} from "../models/video.model.js"
 import {apiError} from "../utils/apiError.js"
 import {apiResponse} from "../utils/apiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
@@ -115,6 +116,69 @@ const getPlaylistById = asyncHandler(async (req, res) => {
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const {playlistId, videoId} = req.params
+
+    if(!playlistId){
+        throw new apiError(400, "playlist id is required")
+    }
+
+    if(!isValidObjectId(playlistId)){
+        throw new apiError(400, "playlist id is invalid")
+    }
+
+    if(!videoId){
+        throw new apiError(400, "video id is required")
+    }
+
+    if(!isValidObjectId(videoId)){
+        throw new apiError(400, "video id is invalid")
+    }
+
+    const playlist = await Playlist.findOne(
+        {
+            _id: playlistId,
+            owner: req.user._id
+        }
+    )
+
+    if(playlist === null){
+        throw new apiError(400, "playlist not exist")
+    }
+
+    const video = await Video.findById(videoId)
+
+    if(!video){
+        throw new apiError(400, "video not exist")
+    }
+
+    const addToPlaylist = await Playlist.findByIdAndUpdate(
+        {
+            _id: playlistId,
+            owner: req.user._id
+        },
+        {
+            $addToSet: {
+                videos: videoId
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    if(!addToPlaylist){
+        throw new apiError(400, "video failed to added playlist")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new apiResponse(
+            200,
+            addToPlaylist,
+            "video added succesfully in playlist"
+        )
+    )
+
 })
 
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
