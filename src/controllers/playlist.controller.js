@@ -78,8 +78,39 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 })
 
 const getPlaylistById = asyncHandler(async (req, res) => {
-    const {playlistId} = req.params
     //TODO: get playlist by id
+    const {playlistId} = req.params
+
+    if(!playlistId){
+        throw new apiError(400, "Playlist Id is required")
+    }
+
+    if(!isValidObjectId(playlistId)){
+        throw new apiError(400, "Invalid playlist id")
+    }
+
+    const playlist = await Playlist.findOne(
+        {
+            _id: playlistId,
+            owner: req.user._id
+        }
+    )
+
+    if(playlist === null){
+        throw new apiError(400, "playlist is not found")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new apiResponse(
+            200,
+            playlist,
+            "playlist fethced successfully"
+        )
+    )
+
+
 })
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
