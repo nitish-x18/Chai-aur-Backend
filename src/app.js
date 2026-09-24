@@ -20,6 +20,7 @@ import videoRouter from "./routes/video.routes.js";
 import tweetRouter from "./routes/tweet.routes.js";
 import commentRouter from "./routes/comment.routes.js";
 import playlistRouter from "./routes/playlist.routes.js";
+import likeRouter from "./routes/like.routes.js";
 
 
 //router declaration-->
@@ -29,10 +30,11 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/video", videoRouter);
-app.use("/api/v1/tweet", tweetRouter);
-app.use("/api/v1/comment", commentRouter);
+app.use("/api/v1/videos", videoRouter);
+app.use("/api/v1/tweets", tweetRouter);
+app.use("/api/v1/comments", commentRouter);
 app.use("/api/v1/playlist", playlistRouter);
+app.use("/api/v1/likes", likeRouter);
 
 console.log("USER ROUTER LOADED");
 
