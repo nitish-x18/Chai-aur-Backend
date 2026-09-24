@@ -64,18 +64,39 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 })
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
-    const {commentId} = req.params
     //TODO: toggle like on comment
+    const {commentId} = req.params
 
 })
 
 const toggleTweetLike = asyncHandler(async (req, res) => {
-    const {tweetId} = req.params
     //TODO: toggle like on tweet
+    const {tweetId} = req.params
 })
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     //TODO: get all liked videos
+
+    const likeVideo = await Like.find(
+        {
+            likedBy: req.user._id
+        }
+    ).populate("video")
+
+    if(likeVideo.length === 0){
+        throw new apiError(404, "no liked video found")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new apiResponse(
+            200,
+            likeVideo,
+            "successfully get all liked video"
+        )
+    )
+
 })
 
 export {
