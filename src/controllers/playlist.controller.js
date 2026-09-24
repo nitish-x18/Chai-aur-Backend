@@ -1,21 +1,21 @@
-import mongoose, {isValidObjectId} from "mongoose"
-import {Playlist} from "../models/playlist.model.js"
-import {Video} from "../models/video.model.js"
-import {apiError} from "../utils/apiError.js"
-import {apiResponse} from "../utils/apiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import mongoose, { isValidObjectId } from "mongoose"
+import { Playlist } from "../models/playlist.model.js"
+import { Video } from "../models/video.model.js"
+import { apiError } from "../utils/apiError.js"
+import { apiResponse } from "../utils/apiResponse.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
 
 
 const createPlaylist = asyncHandler(async (req, res) => {
-    const {name, description} = req.body
+    const { name, description } = req.body
     //TODO: create playlist
-    if(!name || !description){
+    if (!name || !description) {
         throw new apiError(400, "name and description is required")
     }
 
     const userId = req.user._id
 
-    if(!isValidObjectId(userId)){
+    if (!isValidObjectId(userId)) {
         throw new apiError(400, "Invalid user")
     }
 
@@ -28,31 +28,31 @@ const createPlaylist = asyncHandler(async (req, res) => {
         }
     )
 
-    if(!playlist){
+    if (!playlist) {
         throw new apiError(400, "Failed to create Playlist")
     }
 
     return res
-    .status(201)
-    .json(
-        new apiResponse(
-            201, 
-            playlist, 
-            "Playlist created successfully"
+        .status(201)
+        .json(
+            new apiResponse(
+                201,
+                playlist,
+                "Playlist created successfully"
+            )
         )
-    )
- 
+
 })
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
     //TODO: get user playlists
-    const {userId} = req.params
+    const { userId } = req.params
 
-    if(!userId){
+    if (!userId) {
         throw new apiError(400, "userId is required")
     }
 
-    if(!isValidObjectId(userId)){
+    if (!isValidObjectId(userId)) {
         throw new apiError(400, "Invalid user")
     }
 
@@ -62,31 +62,31 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
         }
     )
 
-    if(playlist.length === 0){
+    if (playlist.length === 0) {
         throw new apiError(400, "Playlist is not exist or found")
     }
 
     return res
-    .status(200)
-    .json(
-        new apiResponse(
-            200,
-            playlist,
-            "Playlists fetched successfully"
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                playlist,
+                "Playlists fetched successfully"
+            )
         )
-    )
 
 })
 
 const getPlaylistById = asyncHandler(async (req, res) => {
     //TODO: get playlist by id
-    const {playlistId} = req.params
+    const { playlistId } = req.params
 
-    if(!playlistId){
+    if (!playlistId) {
         throw new apiError(400, "Playlist Id is required")
     }
 
-    if(!isValidObjectId(playlistId)){
+    if (!isValidObjectId(playlistId)) {
         throw new apiError(400, "Invalid playlist id")
     }
 
@@ -97,39 +97,39 @@ const getPlaylistById = asyncHandler(async (req, res) => {
         }
     )
 
-    if(playlist === null){
+    if (playlist === null) {
         throw new apiError(400, "playlist is not found")
     }
 
     return res
-    .status(200)
-    .json(
-        new apiResponse(
-            200,
-            playlist,
-            "playlist fethced successfully"
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                playlist,
+                "playlist fethced successfully"
+            )
         )
-    )
 
 
 })
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
-    const {playlistId, videoId} = req.params
+    const { playlistId, videoId } = req.params
 
-    if(!playlistId){
+    if (!playlistId) {
         throw new apiError(400, "playlist id is required")
     }
 
-    if(!isValidObjectId(playlistId)){
+    if (!isValidObjectId(playlistId)) {
         throw new apiError(400, "playlist id is invalid")
     }
 
-    if(!videoId){
+    if (!videoId) {
         throw new apiError(400, "video id is required")
     }
 
-    if(!isValidObjectId(videoId)){
+    if (!isValidObjectId(videoId)) {
         throw new apiError(400, "video id is invalid")
     }
 
@@ -140,13 +140,13 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
         }
     )
 
-    if(playlist === null){
+    if (playlist === null) {
         throw new apiError(400, "playlist not exist")
     }
 
     const video = await Video.findById(videoId)
 
-    if(!video){
+    if (!video) {
         throw new apiError(400, "video not exist")
     }
 
@@ -165,45 +165,45 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
         }
     )
 
-    if(!addToPlaylist){
+    if (!addToPlaylist) {
         throw new apiError(400, "video failed to added playlist")
     }
 
     return res
-    .status(200)
-    .json(
-        new apiResponse(
-            200,
-            addToPlaylist,
-            "video added succesfully in playlist"
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                addToPlaylist,
+                "video added succesfully in playlist"
+            )
         )
-    )
 
 })
 
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     // TODO: remove video from playlist
-    const {playlistId, videoId} = req.params
+    const { playlistId, videoId } = req.params
 
-    if(!playlistId){
+    if (!playlistId) {
         throw new apiError(400, "Playlist Id is Required")
     }
 
-    if(!isValidObjectId(playlistId)){
+    if (!isValidObjectId(playlistId)) {
         throw new apiError(400, "Invalid Playlist Id")
     }
 
-    if(!videoId){
+    if (!videoId) {
         throw new apiError(400, "Video id is required")
     }
 
-    if(!isValidObjectId(videoId)){
+    if (!isValidObjectId(videoId)) {
         throw new apiError(400, "Invalid Video Id")
     }
 
     const video = await Video.findById(videoId)
 
-    if(!video){
+    if (!video) {
         throw new apiError(400, "video not exist")
     }
 
@@ -222,31 +222,31 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
         }
     )
 
-    if(!removeVideo){
+    if (!removeVideo) {
         throw new apiError(400, "Vedio could not be removed")
     }
 
     return res
-    .status(200)
-    .json(
-        new apiResponse(
-            200,
-            removeVideo,
-            "Video removed successfully from playlist"
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                removeVideo,
+                "Video removed successfully from playlist"
+            )
         )
-    )
 
 })
 
 const deletePlaylist = asyncHandler(async (req, res) => {
     // TODO: delete playlist
-    const {playlistId} = req.params
+    const { playlistId } = req.params
 
-    if(!playlistId){
+    if (!playlistId) {
         throw new apiError(400, "playlistId is required")
     }
 
-    if(!isValidObjectId(playlistId)){
+    if (!isValidObjectId(playlistId)) {
         throw new apiError(400, "invalid playlistId")
     }
 
@@ -257,42 +257,42 @@ const deletePlaylist = asyncHandler(async (req, res) => {
         }
     )
 
-    if(!playlist){
+    if (!playlist) {
         throw new apiError(400, "Failed to delete a playlist")
     }
 
     return res
-    .status(200)
-    .json(
-        new apiResponse(
-            200,
-            null,
-            "successfully delete playlist"
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                null,
+                "successfully delete playlist"
+            )
         )
-    )
 
 })
 
 const updatePlaylist = asyncHandler(async (req, res) => {
     //TODO: update playlist
-    const {playlistId} = req.params
-    const {name, description} = req.body
+    const { playlistId } = req.params
+    const { name, description } = req.body
 
-    if(!playlistId){
+    if (!playlistId) {
         throw new apiError(400, "playlistId is required")
     }
 
-    if(!isValidObjectId(playlistId)){
+    if (!isValidObjectId(playlistId)) {
         throw new apiError(400, "Invalid playlistId")
     }
 
     const updateData = {};
 
-    if(name){
+    if (name) {
         updateData.name = name
     }
 
-    if(description){
+    if (description) {
         updateData.description = description
     }
 
@@ -311,19 +311,19 @@ const updatePlaylist = asyncHandler(async (req, res) => {
         }
     )
 
-    if(!playlist){
+    if (!playlist) {
         throw new apiError(400, "Failed to update playlist")
     }
 
     return res
-    .status(200)
-    .json(
-        new apiResponse(
-            200,
-            playlist,
-            "Playlist is updated succesfully"
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                playlist,
+                "Playlist is updated succesfully"
+            )
         )
-    )
 
 })
 
