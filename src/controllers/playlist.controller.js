@@ -274,9 +274,57 @@ const deletePlaylist = asyncHandler(async (req, res) => {
 })
 
 const updatePlaylist = asyncHandler(async (req, res) => {
+    //TODO: update playlist
     const {playlistId} = req.params
     const {name, description} = req.body
-    //TODO: update playlist
+
+    if(!playlistId){
+        throw new apiError(400, "playlistId is required")
+    }
+
+    if(!isValidObjectId(playlistId)){
+        throw new apiError(400, "Invalid playlistId")
+    }
+
+    const updateData = {};
+
+    if(name){
+        updateData.name = name
+    }
+
+    if(description){
+        updateData.description = description
+    }
+
+    if (Object.keys(updateData).length === 0) {
+        throw new apiError(400, "At least one field is required to update")
+    }
+
+    const playlist = await Playlist.findOneAndUpdate(
+        {
+            _id: playlistId,
+            owner: req.user._id
+        },
+        updateData,
+        {
+            new: true
+        }
+    )
+
+    if(!playlist){
+        throw new apiError(400, "Failed to update playlist")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new apiResponse(
+            200,
+            playlist,
+            "Playlist is updated succesfully"
+        )
+    )
+
 })
 
 export {
