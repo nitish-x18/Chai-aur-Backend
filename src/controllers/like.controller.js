@@ -45,8 +45,8 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     } else {
         const newLike = await Like.create(
             {
-                likedBy: req.user._id,
-                video: videoId
+                video: videoId,
+                likedBy: req.user._id
             }
         )
 
@@ -66,6 +66,58 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 const toggleCommentLike = asyncHandler(async (req, res) => {
     //TODO: toggle like on comment
     const {commentId} = req.params
+
+    if(!commentId){
+        throw new apiError(400, "comment id is required")
+    }
+
+    if(!isValidObjectId(commentId)){
+        throw new apiError(400, "Invalid commentId")
+    }
+
+    const comment = await Comment.findById(commentId)
+
+    if(!comment){
+        throw new apiError(404, "Comment not exist")
+    }
+
+    const like = await Like.exists(
+        {
+            comment: commentId,
+            likedBy: req.user._id
+        }
+    )
+
+    if(like){
+        await Like.findByIdAndDelete(like._id)
+
+        return res
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                like,
+                "unliked Succesfull"
+            )
+        )
+    } else {
+        const newLike = await Like.create(
+            {
+                comment: commentId,
+                likedBy: req.user._id
+            }
+        )
+
+        return res
+        .status(201)
+        .json(
+            new apiResponse(
+                201,
+                newLike,
+                "Comment Liked Succesfull"
+            )
+        )
+    }
 
 })
 
