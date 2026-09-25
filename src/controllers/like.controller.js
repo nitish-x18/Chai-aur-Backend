@@ -4,6 +4,7 @@ import {apiError} from "../utils/apiError.js"
 import {apiResponse} from "../utils/apiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import { Video } from "../models/video.model.js"
+import { Tweet } from "../models/tweet.model.js"
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
     //TODO: toggle like on video
@@ -124,6 +125,59 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 const toggleTweetLike = asyncHandler(async (req, res) => {
     //TODO: toggle like on tweet
     const {tweetId} = req.params
+
+    if(!tweetId){
+        throw new apiError(400, "tweet id is required")
+    }
+
+    if(!isValidObjectId(tweetId)){
+        throw new apiError(400, "Invalid tweetId")
+    }
+
+    const tweet = await Tweet.findById(tweetId)
+
+    if(!tweet){
+        throw new apiError(404, "tweet does not exist")
+    }
+
+    const like = await Like.exists(
+        {
+            tweet: tweetId,
+            likedBy: req.user._id
+        }
+    )
+
+    if(like){
+        await Like.findByIdAndDelete(like._id)
+
+        return res
+        .status(200)
+        .json(
+            new apiResponse(
+                200,
+                like,
+                "unliked succesfully"
+            )
+        )
+    } else {
+        const newLike = await Like.create(
+            {
+                tweet: tweetId,
+                likedBy: req.user._id
+            }
+        )
+
+        return res
+        .status(201)
+        .json(
+            new apiResponse(
+                201,
+                newLike,
+                "liked tweet Succesfully"
+            )
+        )
+    }
+
 })
 
 const getLikedVideos = asyncHandler(async (req, res) => {
